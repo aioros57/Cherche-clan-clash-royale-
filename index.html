@@ -3,48 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Joueurs Sans Clan - Clash Royale</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: url('https://i.imgur.com/9Z3HhZp.jpeg') no-repeat center center fixed;
-            background-size: cover;
+            background: #0b0c10;
             margin: 0;
             padding: 0;
             color: #fff;
         }
 
         header {
-            background: rgba(0,0,0,0.7);
-            padding: 25px;
+            background: #1f2833;
+            padding: 20px;
             text-align: center;
             border-bottom: 3px solid #f7d44c;
         }
 
         header h1 {
             margin: 0;
-            font-size: 36px;
+            font-size: 28px;
             color: #f7d44c;
-            text-shadow: 2px 2px 4px #000;
         }
 
         main {
-            max-width: 950px;
-            margin: 30px auto;
-            background: rgba(0,0,0,0.75);
-            padding: 25px;
+            max-width: 1000px;
+            margin: 20px auto;
+            background: #1f2833;
+            padding: 15px;
             border-radius: 12px;
             border: 2px solid #f7d44c;
         }
 
         h2 {
             color: #f7d44c;
-            text-shadow: 1px 1px 3px #000;
+            margin-top: 10px;
         }
 
         form {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 15px;
         }
 
         label {
@@ -53,9 +52,9 @@
             display: block;
         }
 
-        input, select, textarea {
+        input, select {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border-radius: 6px;
             border: 1px solid #ccc;
             box-sizing: border-box;
@@ -63,6 +62,7 @@
 
         input[type="file"] {
             background: #fff;
+            color: #000;
         }
 
         .full-width {
@@ -73,23 +73,34 @@
             background: #f7d44c;
             color: #000;
             font-weight: bold;
-            padding: 12px 20px;
+            padding: 10px 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         button:hover {
             background: #e0c03d;
         }
 
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .controls > div {
+            flex: 1 1 150px;
+        }
+
         .player-card {
-            background: rgba(0,0,0,0.8);
+            background: #0b0c10;
             border: 2px solid #f7d44c;
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 10px;
+            margin-bottom: 10px;
         }
 
         .player-card h3 {
@@ -98,10 +109,29 @@
         }
 
         .qr-img {
-            max-width: 150px;
-            margin-top: 10px;
+            max-width: 120px;
+            margin-top: 8px;
             border: 2px solid #fff;
             border-radius: 8px;
+        }
+
+        @media (max-width: 700px) {
+            main {
+                margin: 10px;
+                padding: 10px;
+            }
+
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: 1 / 2;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
         }
     </style>
 </head>
@@ -165,6 +195,40 @@
     </section>
 
     <section>
+        <h2>Recherche & Classement</h2>
+
+        <div class="controls">
+            <div>
+                <label>Recherche par pseudo / ID</label>
+                <input type="text" id="searchInput" placeholder="Tape un pseudo ou ID">
+            </div>
+
+            <div>
+                <label>Filtrer par arène</label>
+                <select id="filterArena">
+                    <option value="">Toutes</option>
+                    <option>Arène Légendaire</option>
+                    <option>Ligue 1</option>
+                    <option>Ligue 2</option>
+                    <option>Ligue 3</option>
+                    <option>Autre</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Classement</label>
+                <select id="sortBy">
+                    <option value="none">Aucun</option>
+                    <option value="trophiesDesc">Trophées (↓)</option>
+                    <option value="trophiesAsc">Trophées (↑)</option>
+                    <option value="kingDesc">Tour du Roi (↓)</option>
+                    <option value="kingAsc">Tour du Roi (↑)</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <section>
         <h2>Liste des joueurs</h2>
         <div id="playersContainer"></div>
     </section>
@@ -173,42 +237,98 @@
 <script>
     const form = document.getElementById('playerForm');
     const playersContainer = document.getElementById('playersContainer');
+    const searchInput = document.getElementById('searchInput');
+    const filterArena = document.getElementById('filterArena');
+    const sortBy = document.getElementById('sortBy');
+
+    let players = [];
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const playerId = document.getElementById('playerId').value;
-        const trophies = document.getElementById('trophies').value;
+        const playerId = document.getElementById('playerId').value.trim();
+        const trophies = parseInt(document.getElementById('trophies').value, 10);
         const arena = document.getElementById('arena').value;
-        const kingTower = document.getElementById('kingTower').value;
-        const discord = document.getElementById('discord').value;
-        const messenger = document.getElementById('messenger').value;
+        const kingTower = parseInt(document.getElementById('kingTower').value, 10);
+        const discord = document.getElementById('discord').value.trim();
+        const messenger = document.getElementById('messenger').value.trim();
         const qrFile = document.getElementById('qrImage').files[0];
 
-        const card = document.createElement('div');
-        card.className = 'player-card';
-
-        let qrHTML = "";
+        let qrURL = null;
         if (qrFile) {
-            const imgURL = URL.createObjectURL(qrFile);
-            qrHTML = `<img src="${imgURL}" class="qr-img">`;
+            qrURL = URL.createObjectURL(qrFile);
         }
 
-        card.innerHTML = `
-            <h3>${playerId}</h3>
-            <p><strong>Trophées :</strong> ${trophies}</p>
-            <p><strong>Arène :</strong> ${arena}</p>
-            <p><strong>Tour du Roi :</strong> ${kingTower}</p>
-            ${discord ? `<p><strong>Discord :</strong> ${discord}</p>` : ""}
-            ${messenger ? `<p><strong>Messenger :</strong> ${messenger}</p>` : ""}
-            ${qrHTML}
-        `;
+        players.push({
+            playerId,
+            trophies,
+            arena,
+            kingTower,
+            discord,
+            messenger,
+            qrURL
+        });
 
-        playersContainer.appendChild(card);
         form.reset();
+        renderPlayers();
     });
+
+    searchInput.addEventListener('input', renderPlayers);
+    filterArena.addEventListener('change', renderPlayers);
+    sortBy.addEventListener('change', renderPlayers);
+
+    function renderPlayers() {
+        playersContainer.innerHTML = "";
+
+        let filtered = players.slice();
+
+        const search = searchInput.value.trim().toLowerCase();
+        if (search) {
+            filtered = filtered.filter(p =>
+                p.playerId.toLowerCase().includes(search)
+            );
+        }
+
+        const arenaFilter = filterArena.value;
+        if (arenaFilter) {
+            filtered = filtered.filter(p => p.arena === arenaFilter);
+        }
+
+        switch (sortBy.value) {
+            case "trophiesDesc":
+                filtered.sort((a, b) => b.trophies - a.trophies);
+                break;
+            case "trophiesAsc":
+                filtered.sort((a, b) => a.trophies - b.trophies);
+                break;
+            case "kingDesc":
+                filtered.sort((a, b) => b.kingTower - a.kingTower);
+                break;
+            case "kingAsc":
+                filtered.sort((a, b) => a.kingTower - b.kingTower);
+                break;
+        }
+
+        filtered.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'player-card';
+
+            card.innerHTML = `
+                <h3>${p.playerId}</h3>
+                <p><strong>Trophées :</strong> ${p.trophies}</p>
+                <p><strong>Arène :</strong> ${p.arena}</p>
+                <p><strong>Tour du Roi :</strong> ${p.kingTower}</p>
+                ${p.discord ? `<p><strong>Discord :</strong> ${p.discord}</p>` : ""}
+                ${p.messenger ? `<p><strong>Messenger :</strong> ${p.messenger}</p>` : ""}
+                ${p.qrURL ? `<img src="${p.qrURL}" class="qr-img">` : ""}
+            `;
+
+            playersContainer.appendChild(card);
+        });
+    }
 </script>
 
 </body>
 </html>
+
 
