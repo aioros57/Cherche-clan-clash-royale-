@@ -1,45 +1,51 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Joueurs sans clan - Clash Royale</title>
+    <title>Joueurs Sans Clan - Clash Royale</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #0b0c10;
-            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            background: url('https://i.imgur.com/9Z3HhZp.jpeg') no-repeat center center fixed;
+            background-size: cover;
             margin: 0;
             padding: 0;
+            color: #fff;
         }
 
         header {
-            background: #1f2833;
-            padding: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 25px;
             text-align: center;
+            border-bottom: 3px solid #f7d44c;
         }
 
         header h1 {
             margin: 0;
-            color: #66fcf1;
+            font-size: 36px;
+            color: #f7d44c;
+            text-shadow: 2px 2px 4px #000;
         }
 
         main {
-            max-width: 900px;
+            max-width: 950px;
             margin: 30px auto;
-            padding: 20px;
-            background: #1f2833;
-            border-radius: 10px;
+            background: rgba(0,0,0,0.75);
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #f7d44c;
         }
 
         h2 {
-            color: #45a29e;
+            color: #f7d44c;
+            text-shadow: 1px 1px 3px #000;
         }
 
         form {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px 30px;
-            margin-bottom: 30px;
+            gap: 20px;
         }
 
         label {
@@ -48,20 +54,16 @@
             display: block;
         }
 
-        input[type="text"],
-        input[type="number"],
-        select,
-        textarea {
+        input, select, textarea {
             width: 100%;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #c5c6c7;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
             box-sizing: border-box;
         }
 
-        textarea {
-            resize: vertical;
-            min-height: 80px;
+        input[type="file"] {
+            background: #fff;
         }
 
         .full-width {
@@ -69,145 +71,33 @@
         }
 
         button {
-            background: #66fcf1;
-            color: #0b0c10;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
+            background: #f7d44c;
+            color: #000;
             font-weight: bold;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
         }
 
         button:hover {
-            background: #45a29e;
-        }
-
-        .players-list {
-            margin-top: 20px;
+            background: #e0c03d;
         }
 
         .player-card {
-            border: 1px solid #c5c6c7;
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            background: #0b0c10;
+            background: rgba(0,0,0,0.8);
+            border: 2px solid #f7d44c;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
         }
 
         .player-card h3 {
-            margin: 0 0 5px 0;
-            color: #66fcf1;
+            margin: 0;
+            color: #f7d44c;
         }
 
-        .qr-preview {
-            border: 1px dashed #c5c6c7;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 14px;
-            color: #c5c6c7;
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>Joueurs sans clan - Clash Royale</h1>
-    <p>Inscris-toi pour être trouvé par un clan ou créer le tien.</p>
-</header>
-
-<main>
-    <section>
-        <h2>Inscription joueur</h2>
-        <form id="playerForm">
-            <!-- Pseudo / ID joueur -->
-            <div>
-                <label for="playerId">ID / Pseudo Clash Royale</label>
-                <input type="text" id="playerId" name="playerId" placeholder="Ex : #ABCD1234 ou ton pseudo" required>
-            </div>
-
-            <!-- Nombre de trophées -->
-            <div>
-                <label for="trophies">Trophées</label>
-                <input type="number" id="trophies" name="trophies" min="0" placeholder="Ex : 5200" required>
-            </div>
-
-            <!-- Arène -->
-            <div>
-                <label for="arena">Arène</label>
-                <select id="arena" name="arena" required>
-                    <option value="">Choisir une arène</option>
-                    <option value="Arène légendaire">Arène légendaire</option>
-                    <option value="Ligue 1">Ligue 1</option>
-                    <option value="Ligue 2">Ligue 2</option>
-                    <option value="Ligue 3">Ligue 3</option>
-                    <option value="Autre">Autre / en dessous</option>
-                </select>
-            </div>
-
-            <!-- Niveau de tour du roi -->
-            <div>
-                <label for="kingTower">Niveau tour du roi</label>
-                <input type="number" id="kingTower" name="kingTower" min="1" max="16" placeholder="Ex : 14" required>
-            </div>
-
-            <!-- QR code ami (URL ou description) -->
-            <div class="full-width">
-                <label for="qrCode">QR code ami Clash Royale</label>
-                <textarea id="qrCode" name="qrCode" placeholder="Colle ici le lien de ton QR code, ou décris où le trouver dans ton profil."></textarea>
-                <div class="qr-preview">
-                    Ici, tu peux mettre une image de ton QR code (par exemple en l’hébergeant et en mettant le lien),
-                    ou le lien direct de ton profil ami Clash Royale.
-                </div>
-            </div>
-
-            <!-- Bouton -->
-            <div class="full-width" style="text-align: center;">
-                <button type="submit">S'inscrire</button>
-            </div>
-        </form>
-    </section>
-
-    <section class="players-list">
-        <h2>Liste des joueurs sans clan</h2>
-        <div id="playersContainer">
-            <!-- Les cartes joueurs seront ajoutées ici en JavaScript -->
-        </div>
-    </section>
-</main>
-
-<script>
-    const form = document.getElementById('playerForm');
-    const playersContainer = document.getElementById('playersContainer');
-
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const playerId = document.getElementById('playerId').value;
-        const trophies = document.getElementById('trophies').value;
-        const arena = document.getElementById('arena').value;
-        const kingTower = document.getElementById('kingTower').value;
-        const qrCode = document.getElementById('qrCode').value;
-
-        // Création d’une carte joueur
-        const card = document.createElement('div');
-        card.className = 'player-card';
-
-        card.innerHTML = `
-            <h3>${playerId}</h3>
-            <p><strong>Trophées :</strong> ${trophies}</p>
-            <p><strong>Arène :</strong> ${arena}</p>
-            <p><strong>Niveau tour du roi :</strong> ${kingTower}</p>
-            ${qrCode ? `<p><strong>QR ami :</strong> ${qrCode}</p>` : ''}
-        `;
-
-        playersContainer.appendChild(card);
-
-        // Réinitialiser le formulaire
-        form.reset();
-    });
-</script>
-
-</body>
-</html>
+        .qr-img {
+            max-width: 150px;
+            margin-top: 10px;
